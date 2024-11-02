@@ -75,6 +75,10 @@ const App = () => {
             source,
             category,
             paymentMode,
+            serviceCenter: message.service_center,
+            simId: message.sim_id,
+            threadId: message.thread_id,
+            type: message.type,
           };
         });
         setExpenses(extractedExpenses);
@@ -101,6 +105,10 @@ const App = () => {
                   <Text style={styles.itemText}><Text style={styles.boldText}>Category:</Text> {item.category}</Text>
                   <Text style={styles.itemText}><Text style={styles.boldText}>Payment Mode:</Text> {item.paymentMode}</Text>
                   <Text style={styles.itemText}><Text style={styles.boldText}>Description:</Text> {item.description}</Text>
+                  <Text style={styles.itemText}><Text style={styles.boldText}>Service Center:</Text> {item.serviceCenter}</Text>
+                  <Text style={styles.itemText}><Text style={styles.boldText}>SIM ID:</Text> {item.simId}</Text>
+                  <Text style={styles.itemText}><Text style={styles.boldText}>Thread ID:</Text> {item.threadId}</Text>
+                  <Text style={styles.itemText}><Text style={styles.boldText}>Type:</Text> {item.type}</Text>
                 </View>
               )}
             />
@@ -118,6 +126,10 @@ const App = () => {
                   <Text style={styles.itemText}><Text style={styles.boldText}>Sender:</Text> {item.address}</Text>
                   <Text style={styles.itemText}><Text style={styles.boldText}>Date:</Text> {new Date(item.date).toLocaleDateString()}</Text>
                   <Text style={styles.itemText}><Text style={styles.boldText}>Message:</Text> {item.body}</Text>
+                  <Text style={styles.itemText}><Text style={styles.boldText}>Service Center:</Text> {item.service_center}</Text>
+                  <Text style={styles.itemText}><Text style={styles.boldText}>SIM ID:</Text> {item.sim_id}</Text>
+                  <Text style={styles.itemText}><Text style={styles.boldText}>Thread ID:</Text> {item.thread_id}</Text>
+                  <Text style={styles.itemText}><Text style={styles.boldText}>Type:</Text> {item.type}</Text>
                 </View>
               )}
             />

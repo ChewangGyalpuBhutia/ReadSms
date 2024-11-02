@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, PermissionsAndroid, Platform, StyleSheet, TouchableOpacity, SafeAreaView, Image } from 'react-native';
+import { View, Text, FlatList, PermissionsAndroid, Platform, StyleSheet, TouchableOpacity, SafeAreaView, Image, Alert } from 'react-native';
 import SmsAndroid from 'react-native-get-sms-android';
 import logo from './assets/logo.png';
 
@@ -68,6 +68,7 @@ const App = () => {
           const paymentMode = message.body.includes('UPI') ? 'UPI' : 'Other';
           return {
             id: message._id,
+            sender: message.address,
             amount,
             description: message.body,
             date,
@@ -87,32 +88,42 @@ const App = () => {
       <View style={{ flex: 1, paddingHorizontal: 20, alignItems: 'center', justifyContent: 'center' }}>
         {showLogo && <Image source={logo} style={styles.logo} />}
         {!showLogo && showExpenses && (
-          <FlatList
-            data={expenses}
-            keyExtractor={(item) => item.id.toString()}
-            renderItem={({ item }) => (
-              <View style={styles.itemContainer}>
-                <Text style={styles.itemText}><Text style={styles.boldText}>Amount:</Text> {item.amount}</Text>
-                <Text style={styles.itemText}><Text style={styles.boldText}>Date:</Text> {item.date}</Text>
-                <Text style={styles.itemText}><Text style={styles.boldText}>Source:</Text> {item.source}</Text>
-                <Text style={styles.itemText}><Text style={styles.boldText}>Category:</Text> {item.category}</Text>
-                <Text style={styles.itemText}><Text style={styles.boldText}>Payment Mode:</Text> {item.paymentMode}</Text>
-                <Text style={styles.itemText}><Text style={styles.boldText}>Description:</Text> {item.description}</Text>
-              </View>
-            )}
-          />
+          expenses.length > 0 ? (
+            <FlatList
+              data={expenses}
+              keyExtractor={(item) => item.id.toString()}
+              renderItem={({ item }) => (
+                <View style={styles.itemContainer}>
+                  <Text style={styles.itemText}><Text style={styles.boldText}>Sender:</Text> {item.sender}</Text>
+                  <Text style={styles.itemText}><Text style={styles.boldText}>Amount:</Text> {item.amount}</Text>
+                  <Text style={styles.itemText}><Text style={styles.boldText}>Date:</Text> {item.date}</Text>
+                  <Text style={styles.itemText}><Text style={styles.boldText}>Source:</Text> {item.source}</Text>
+                  <Text style={styles.itemText}><Text style={styles.boldText}>Category:</Text> {item.category}</Text>
+                  <Text style={styles.itemText}><Text style={styles.boldText}>Payment Mode:</Text> {item.paymentMode}</Text>
+                  <Text style={styles.itemText}><Text style={styles.boldText}>Description:</Text> {item.description}</Text>
+                </View>
+              )}
+            />
+          ) : (
+            <Text style={styles.noMessageText}>No messages found</Text>
+          )
         )}
         {!showLogo && !showExpenses && (
-          <FlatList
-            data={allMessages}
-            keyExtractor={(item) => item._id.toString()}
-            renderItem={({ item }) => (
-              <View style={styles.itemContainer}>
-                <Text style={styles.itemText}><Text style={styles.boldText}>Date:</Text> {new Date(item.date).toLocaleDateString()}</Text>
-                <Text style={styles.itemText}><Text style={styles.boldText}>Message:</Text> {item.body}</Text>
-              </View>
-            )}
-          />
+          allMessages.length > 0 ? (
+            <FlatList
+              data={allMessages}
+              keyExtractor={(item) => item._id.toString()}
+              renderItem={({ item }) => (
+                <View style={styles.itemContainer}>
+                  <Text style={styles.itemText}><Text style={styles.boldText}>Sender:</Text> {item.address}</Text>
+                  <Text style={styles.itemText}><Text style={styles.boldText}>Date:</Text> {new Date(item.date).toLocaleDateString()}</Text>
+                  <Text style={styles.itemText}><Text style={styles.boldText}>Message:</Text> {item.body}</Text>
+                </View>
+              )}
+            />
+          ) : (
+            <Text style={styles.noMessageText}>No messages found</Text>
+          )
         )}
       </View>
       <View style={styles.buttonContainer}>
@@ -176,6 +187,12 @@ const styles = StyleSheet.create({
   },
   boldText: {
     fontWeight: 'bold',
+  },
+  noMessageText: {
+    fontSize: 18,
+    color: '#333',
+    textAlign: 'center',
+    marginTop: 20,
   },
 });
 

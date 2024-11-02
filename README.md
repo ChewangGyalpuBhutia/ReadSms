@@ -6,7 +6,6 @@ A simple and elegant React Native app that allows users to manage their expenses
 - 💸 **Extract Expense Information**: Parse and extract relevant expense details such as Amount, Description, Date, and Source of Payment.
 - 📊 **Display Expenses**: Show the extracted expenses in a clean and organized list view.
 - 🔍 **View All Messages**: Option to view all SMS messages, not just expense-related ones.
-- 📱 **Real-Time Updates**: Update the expense list in real-time when new SMS messages are received.
 - 🌟 **Clean and Intuitive User Interface**: A user-friendly interface that makes it easy to track and manage expenses.
 - 📱 **Compatible with Android**: Works smoothly on Android devices.
 

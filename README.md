@@ -34,7 +34,7 @@ First, clone the repository to your local machine:
 
 ```sh
 git clone https://github.com/ChewangGyalpuBhutia/ReadSms.git
-cd react-native-todo-app
+cd ReadSms
 ```
 
 ### Step 2: Install Dependencies

@@ -61,11 +61,19 @@ const App = () => {
           const amountMatch = message.body.match(/(\d+(\.\d{1,2})?)/);
           const amount = amountMatch ? amountMatch[0] : 'N/A';
           const date = new Date(message.date).toLocaleDateString();
+          const sourceMatch = message.body.match(/(UPI|bank|account|acc|via|using|at)\s(\w+)/i);
+          const source = sourceMatch ? sourceMatch[2] : 'Unknown';
+          const categoryMatch = message.body.match(/(spent|debited)\s(\d+(\.\d{1,2})?)\s(at|for)\s(\w+)/i);
+          const category = categoryMatch ? categoryMatch[5] : 'General';
+          const paymentMode = message.body.includes('UPI') ? 'UPI' : 'Other';
           return {
             id: message._id,
             amount,
             description: message.body,
             date,
+            source,
+            category,
+            paymentMode,
           };
         });
         setExpenses(extractedExpenses);
@@ -86,6 +94,9 @@ const App = () => {
               <View style={styles.itemContainer}>
                 <Text style={styles.itemText}><Text style={styles.boldText}>Amount:</Text> {item.amount}</Text>
                 <Text style={styles.itemText}><Text style={styles.boldText}>Date:</Text> {item.date}</Text>
+                <Text style={styles.itemText}><Text style={styles.boldText}>Source:</Text> {item.source}</Text>
+                <Text style={styles.itemText}><Text style={styles.boldText}>Category:</Text> {item.category}</Text>
+                <Text style={styles.itemText}><Text style={styles.boldText}>Payment Mode:</Text> {item.paymentMode}</Text>
                 <Text style={styles.itemText}><Text style={styles.boldText}>Description:</Text> {item.description}</Text>
               </View>
             )}

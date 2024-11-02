@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Button, FlatList, PermissionsAndroid, Platform } from 'react-native';
+import { View, Text, FlatList, PermissionsAndroid, Platform, StyleSheet, TouchableOpacity, SafeAreaView, Image } from 'react-native';
 import SmsAndroid from 'react-native-get-sms-android';
-// import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions';
+import logo from './assets/logo.png';
 
 const App = () => {
   const [expenses, setExpenses] = useState([]);
+  const [allMessages, setAllMessages] = useState([]);
+  const [showExpenses, setShowExpenses] = useState(true);
+  const [showLogo, setShowLogo] = useState(true);
 
   useEffect(() => {
     requestSmsPermission();
@@ -36,12 +39,12 @@ const App = () => {
 
   const readSmsMessages = () => {
     const filter = {
-      box: '', // empty string to include both inbox and sent
-      minDate: 1554636310165, // timestamp (in milliseconds since UNIX epoch)
-      maxDate: Date.now(), // timestamp (in milliseconds since UNIX epoch)
+      box: '',
+      minDate: 1554636310165,
+      maxDate: Date.now(),
       bodyRegex: '(.*)',
       indexFrom: 0,
-      maxCount: 10,
+      // maxCount: 10,
     };
 
     SmsAndroid.list(
@@ -51,9 +54,9 @@ const App = () => {
       },
       (count, smsList) => {
         const messages = JSON.parse(smsList);
-        const expenseMessages = messages.filter((message) =>
-          message.body.includes('spent') || message.body.includes('debited')
-        );
+        console.log('Messages: ', messages);
+        setAllMessages(messages);
+        const expenseMessages = messages.filter((message) => message.body.includes('spent') || message.body.includes('debited'));
         const extractedExpenses = expenseMessages.map((message) => {
           const amountMatch = message.body.match(/(\d+(\.\d{1,2})?)/);
           const amount = amountMatch ? amountMatch[0] : 'N/A';
@@ -66,26 +69,103 @@ const App = () => {
           };
         });
         setExpenses(extractedExpenses);
+        setShowLogo(false);
       },
     );
   };
 
   return (
-    <View style={{ flex: 1, padding: 20 }}>
-      <Button title="View All Expenses" onPress={readSmsMessages} />
-      <FlatList
-        data={expenses}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
-          <View style={{ padding: 10, borderBottomWidth: 1 }}>
-            <Text>Amount: {item.amount}</Text>
-            <Text>Description: {item.description}</Text>
-            <Text>Date: {item.date}</Text>
-          </View>
+    <SafeAreaView style={styles.container}>
+      <View style={{ flex: 1, paddingHorizontal: 20, alignItems: 'center', justifyContent: 'center' }}>
+        {showLogo && <Image source={logo} style={styles.logo} />}
+        {!showLogo && showExpenses && (
+          <FlatList
+            data={expenses}
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={({ item }) => (
+              <View style={styles.itemContainer}>
+                <Text style={styles.itemText}><Text style={styles.boldText}>Amount:</Text> {item.amount}</Text>
+                <Text style={styles.itemText}><Text style={styles.boldText}>Date:</Text> {item.date}</Text>
+                <Text style={styles.itemText}><Text style={styles.boldText}>Description:</Text> {item.description}</Text>
+              </View>
+            )}
+          />
         )}
-      />
-    </View>
+        {!showLogo && !showExpenses && (
+          <FlatList
+            data={allMessages}
+            keyExtractor={(item) => item._id.toString()}
+            renderItem={({ item }) => (
+              <View style={styles.itemContainer}>
+                <Text style={styles.itemText}><Text style={styles.boldText}>Date:</Text> {new Date(item.date).toLocaleDateString()}</Text>
+                <Text style={styles.itemText}><Text style={styles.boldText}>Message:</Text> {item.body}</Text>
+              </View>
+            )}
+          />
+        )}
+      </View>
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity style={styles.button1} onPress={() => { readSmsMessages(); setShowExpenses(true); }}>
+          <Text style={styles.buttonText}>View All Expenses</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.button} onPress={() => { readSmsMessages(); setShowExpenses(false); }}>
+          <Text style={styles.buttonText}>View All Messages</Text>
+        </TouchableOpacity>
+      </View>
+    </SafeAreaView>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    paddingTop: 25,
+    paddingBottom: 20,
+    backgroundColor: 'white',
+  },
+  logo: {
+    width: 200,
+    height: 200,
+    alignSelf: 'center',
+  },
+  buttonContainer: {
+    padding: 20,
+    borderTopLeftRadius: 4,
+    borderTopRightRadius: 5,
+  },
+  button1: {
+    backgroundColor: '#C5393A',
+    padding: 15,
+    borderRadius: 5,
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  button: {
+    backgroundColor: '#007bff',
+    padding: 15,
+    borderRadius: 5,
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  itemContainer: {
+    padding: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd',
+    backgroundColor: '#fff',
+    borderRadius: 5,
+    marginBottom: 10,
+  },
+  itemText: {
+    fontSize: 16,
+    color: '#333',
+  },
+  boldText: {
+    fontWeight: 'bold',
+  },
+});
 
 export default App;
